@@ -1,6 +1,3 @@
-# prueba-tecnica
- 
-
 # Proyecto: Automatización de Carga Masiva de Órdenes de Trabajo
 
 ## Descripción General

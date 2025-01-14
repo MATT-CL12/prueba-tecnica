@@ -1,170 +1,195 @@
-## Documentación del Código
 
-A continuación se detalla el funcionamiento de cada una de las funciones presentes en los archivos `Main.py` y `WebUploader_Class.py`, explicando su propósito, entrada, salida y lógica interna.
+# Explicación del Sistema de Automatización de Órdenes de Trabajo
 
----
+El sistema consiste en dos archivos principales que trabajan en conjunto para automatizar la carga masiva de órdenes de trabajo en el sistema IBM Maximo. Veamos cómo funciona todo el proceso:
 
-### Archivo: `Main.py`
+## 1. Archivo Principal (Main)
 
-Este archivo actúa como el punto de entrada del programa y coordina todas las operaciones principales.
+### Inicialización y Configuración
 
-#### **`main()`**
-
-- **Propósito**: Es el controlador principal que organiza la ejecución del programa.
-- **Lógica Interna**:
-  1. Carga los archivos JSON de configuración:
-     - `User_Config.json`: Contiene las credenciales y configuraciones generales del usuario.
-     - `ID_Config.json`: Contiene los identificadores de los elementos HTML necesarios.
-     - `Campos_Diligenciar.json`: Define los campos que se deben llenar en cada OT.
-  2. Lee el archivo Excel (`Datos_entrada.xlsx`) para obtener las OT a procesar.
-  3. Crea una instancia de la clase `WebUploader_Class` para manejar las interacciones con el navegador.
-  4. Itera sobre cada OT en el archivo Excel y llama a las funciones necesarias para procesarla.
-  5. Genera reportes de ejecución y errores.
-
----
-
-### Archivo: `WebUploader_Class.py`
-
-Esta clase encapsula todas las interacciones con el navegador y las operaciones relacionadas con el procesamiento de las OT.
-
-#### **Clase: `WebUploader_Class`**
-
-##### **`__init__(self, Data_config, verbose=True)`**
-
-- **Propósito**: Inicializa el navegador y configura las opciones necesarias para Selenium.
-- **Entrada**:
-  - `Data_config`: Diccionario con las configuraciones del usuario, como URL y credenciales.
-  - `verbose`: Indica si se deben imprimir mensajes de depuración.
-- **Lógica Interna**:
-  1. Configura las opciones del navegador.
-  2. Inicia una instancia de WebDriver para Microsoft Edge.
-  3. Navega a la URL proporcionada en `Data_config`.
-
-##### **`log_in(self, Data_config, IDs, verbose=True)`**
-
-- **Propósito**: Inicia sesión en el sistema utilizando las credenciales proporcionadas.
-- **Entrada**:
-  - `Data_config`: Diccionario con el nombre de usuario y contraseña.
-  - `IDs`: Diccionario con los identificadores de los campos HTML para el inicio de sesión.
-- **Salida**: Devuelve `True` si el inicio de sesión fue exitoso; de lo contrario, `False`.
-- **Lógica Interna**:
-  1. Encuentra los elementos HTML para el nombre de usuario y contraseña.
-  2. Ingresa las credenciales y selecciona el idioma si es necesario.
-  3. Valida que el inicio de sesión fue exitoso mediante la presencia de un elemento específico.
-
-##### **`log_menu(self, menu, verbose=False)`**
-
-- **Propósito**: Navega al menú deseado dentro del sistema.
-- **Entrada**:
-  - `menu`: Lista de pasos del menú a seleccionar.
-  - `verbose`: Indica si se deben imprimir mensajes de depuración.
-- **Salida**: Devuelve `True` si la navegación fue exitosa; de lo contrario, `False`.
-- **Lógica Interna**:
-  1. Itera sobre los elementos del menú especificados en la lista.
-  2. Hace clic en cada elemento utilizando su identificador HTML.
-
-##### **`Crear_OT(self, OT_actual, IDs, verbose_crearOT=False)`**
-
-- **Propósito**: Crea una nueva OT o accede a una existente en el sistema.
-- **Entrada**:
-  - `OT_actual`: Objeto que contiene la información de la OT a procesar.
-  - `IDs`: Diccionario con los identificadores HTML necesarios.
-  - `verbose_crearOT`: Indica si se deben imprimir mensajes de depuración.
-- **Lógica Interna**:
-  1. Valida si la OT ya existe en el sistema.
-  2. Si no existe, utiliza los identificadores para crearla.
-  3. Si ya existe, navega a sus detalles.
-
-##### **`Ingresar_Datos(self, columnas, IDs, Object_OT, instancia_interna=None, verbose=False)`**
-
-- **Propósito**: Llena los campos de la interfaz de usuario con los datos proporcionados.
-- **Entrada**:
-  - `columnas`: Lista de campos a llenar.
-  - `IDs`: Diccionario con los identificadores HTML.
-  - `Object_OT`: Objeto que representa la OT.
-  - `instancia_interna`: (Opcional) Subcomponente de la OT que se está manipulando.
-  - `verbose`: Indica si se deben imprimir mensajes de depuración.
-- **Lógica Interna**:
-  1. Itera sobre los campos especificados en `columnas`.
-  2. Verifica el tipo de dato del campo (texto, booleano, lista, etc.).
-  3. Realiza las acciones correspondientes para ingresar el dato en el campo HTML.
-  4. Maneja errores como celdas vacías o datos no válidos.
-
-##### **`cerrar_navegador(self)`**
-
-- **Propósito**: Cierra el navegador y finaliza la sesión de Selenium.
-- **Lógica Interna**:
-  1. Llama al método `quit()` del WebDriver para cerrar todas las ventanas del navegador.
-
----
-
-#### Clase: `Orden_Trabajo_Class`
-
-##### **`__init__(self, WebUploader_object, DF_TAREAS_init, DF_MANO_DE_OBRA_init, DF_MATERIALES_init, DF_SERVICIOS_init, Data_OT)`**
-
-- **Propósito**: Inicializa una OT con los datos proporcionados.
-- **Entrada**:
-  - `WebUploader_object`: Instancia de `WebUploader_Class` para manejar el navegador.
-  - `DF_TAREAS_init`: DataFrame con información inicial de tareas.
-  - `DF_MANO_DE_OBRA_init`: DataFrame con información inicial de mano de obra.
-  - `DF_MATERIALES_init`: DataFrame con información inicial de materiales.
-  - `DF_SERVICIOS_init`: DataFrame con información inicial de servicios.
-  - `Data_OT`: Diccionario con los datos de la OT.
-
-##### **`guardarOT(self, IDs, verbose=False)`**
-
-- **Propósito**: Guarda los cambios realizados en la OT en el sistema.
-- **Entrada**:
-  - `IDs`: Diccionario con los identificadores HTML.
-  - `verbose`: Indica si se deben imprimir mensajes de depuración.
-- **Lógica Interna**:
-  1. Encuentra el botón de guardar en la interfaz.
-  2. Realiza la acción de guardado y verifica errores.
-
-##### **`Eliminar_Filas(self, tipo, IDs, labor_bot="MODIFICAR")`**
-
-- **Propósito**: Elimina todas las filas de una sección específica de la OT.
-- **Entrada**:
-  - `tipo`: Sección a limpiar (e.g., "tareas", "materiales").
-  - `IDs`: Identificadores HTML necesarios.
-  - `labor_bot`: Tipo de acción (crear o modificar).
-- **Lógica Interna**:
-  1. Encuentra y elimina todas las filas de la sección especificada.
-  2. Guarda los cambios tras completar la eliminación.
-
----
-
-### Ejemplo de Ejecución
 ```python
-from WebUploader_Class import WebUploader_Class
-from Orden_Trabajo_Class import Orden_Trabajo_Class
+import pandas as pd
+from WebUploader_Class import WebUploader_Class, Orden_Trabajo
+from time import time
+import datetime
 import json
+import sys
 
-# Configuración inicial
-with open("Input/User_Config.json", encoding='utf-8') as file:
-    Data_config = json.load(file)
-
-with open("Input/ID_Config.json", encoding='utf-8') as file:
-    IDs = json.load(file)
-
-# Inicializar WebUploader
-uploader = WebUploader_Class(Data_config)
-
-# Iniciar sesión
-if uploader.log_in(Data_config, IDs):
-    print("Inicio de sesión exitoso")
-
-# Procesar una OT de ejemplo
-Data_OT = {
-    "ID": 12345,
-    "OT": 67890,
-    "DESCRIPCION": "Reparación de equipo",
+time_program = {
+    "start_program": time(),
+    "end_program":0,
+    "start_OT":0, 
+    "end_OT":0, 
+    "list_time_OT":[]
 }
-
-ot_actual = Orden_Trabajo_Class(uploader, DF_TAREAS_init=None, DF_MANO_DE_OBRA_init=None,
-                                DF_MATERIALES_init=None, DF_SERVICIOS_init=None, Data_OT=Data_OT)
-
-uploader.Crear_OT(ot_actual, IDs)
-uploader.cerrar_navegador()
 ```
 
+Este código inicial establece:
+- Un sistema de medición de tiempo para monitorear el rendimiento
+- Las importaciones necesarias para manejar datos, tiempo y configuraciones
+- Un registro del tiempo de inicio del programa
+
+### Sistema de Registro Dual
+
+```python
+class DualWriter:
+    def __init__(self, original_stdout, archivo):
+        self.original_stdout = original_stdout
+        self.archivo = archivo
+    
+    def write(self, mensaje):
+        self.original_stdout.write(mensaje)
+        self.archivo.write(mensaje)
+```
+
+Esta clase permite:
+- Escribir simultáneamente en la consola y en un archivo de registro
+- Mantener un registro detallado de toda la ejecución
+- Crear archivos de registro con marca de tiempo para múltiples ejecuciones
+
+### Configuración del Sistema
+
+```python
+with open("Input\\User_Config.json", encoding='utf-8') as file:
+    Data_config = json.load(file)
+with open("Input\\ID_Config.json", encoding='utf-8') as file:
+    IDs = json.load(file)
+with open("Input\\Campos_Diligenciar.json", encoding='utf-8') as file:
+    Campos_Diligenciar = json.load(file)
+```
+
+El sistema carga tres tipos de configuración:
+1. Configuración de usuario (credenciales y settings)
+2. IDs de elementos web para automatización
+3. Definición de campos a completar en las OTs
+
+### Carga de Datos
+
+```python
+name = 'Datos_entrada.xlsx'
+DF_OTs = pd.read_excel('Input\\' + name, sheet_name="OTs")
+DF_TAREAS = pd.read_excel('Input\\' + name, sheet_name="TAREAS")
+DF_MANO_DE_OBRA = pd.read_excel('Input\\' + name, sheet_name="MANO_DE_OBRA")
+DF_MATERIALES = pd.read_excel('Input\\' + name, sheet_name="MATERIALES")
+DF_SERVICIOS = pd.read_excel('Input\\' + name, sheet_name="SERVICIOS")
+```
+
+Se cargan los datos desde un Excel estructurado con múltiples hojas que contienen:
+- Información general de OTs
+- Detalles de tareas
+- Asignaciones de mano de obra
+- Listados de materiales
+- Servicios requeridos
+
+### Proceso Principal
+
+```python
+for row, Datos in DF_OTs.iterrows():
+    if Datos['LABOR_BOT']!='NADA':
+        try:
+            time_program["start_OT"] = time()
+            
+            DF_TAREAS_ACTUAL = DF_TAREAS.loc[DF_TAREAS['ID']==Datos['ID']]
+            OT_actual = Orden_Trabajo_Class(WebUploader, DF_TAREAS_ACTUAL, ...)
+            
+            WebUploader.Crear_OT(OT_actual, IDs, True)
+```
+
+Este bucle principal:
+- Procesa cada OT en el archivo
+- Filtra los datos relacionados
+- Crea instancias de OT
+- Maneja el proceso de creación/actualización
+
+## 2. Clase WebUploader
+
+### Inicialización del Navegador
+
+```python
+class WebUploader_Class:
+    def __init__(self, Data_config, verbose=True):
+        brwoser_options = Options()
+        self.driver = webdriver.Edge(brwoser_options)
+        self.driver.maximize_window()
+        self.driver.get(Data_config["url_path"])
+```
+
+Esta clase:
+- Inicia un navegador Edge automatizado
+- Configura las opciones del navegador
+- Navega a la URL del sistema
+
+### Gestión de Sesión
+
+```python
+def log_in(self, Data_config, IDs, verbose=True):
+    self.username = Data_config["USER"]
+    self.password = Data_config["PASS"]
+    username_field = self.click_until_interactable(By.ID, IDs["username"])
+    username_field.send_keys(self.username)
+```
+
+Maneja:
+- El inicio de sesión en el sistema
+- La validación de credenciales
+- La navegación inicial
+
+### Manipulación de OTs
+
+```python
+class Orden_Trabajo_Class():
+    def __init__(self, WebUploader_object, DF_TAREAS_init, ...):
+        self.WebUploader = WebUploader_object
+        self.ID = self.Convertir_a_tipo(Data_OT['ID'], int)
+```
+
+Esta clase gestiona:
+- La creación/modificación de OTs
+- El llenado de campos
+- La validación de datos
+- El manejo de errores
+
+### Funciones de Soporte
+
+```python
+def click_until_interactable(self, buscador, button_id, click=True):
+    wait = WebDriverWait(self.driver, tiempo_wait)
+    element = wait.until(EC.visibility_of_element_located((buscador, button_id)))
+```
+
+Incluye funciones para:
+- Interactuar con elementos web
+- Esperar elementos interactivos
+- Manejar timeouts y errores
+
+## Flujo Completo del Sistema
+
+1. El sistema inicia y carga configuraciones
+2. Establece conexión con el navegador
+3. Inicia sesión en IBM Maximo
+4. Por cada OT en el archivo:
+   - Carga los datos relacionados
+   - Crea o modifica la OT
+   - Llena todos los campos requeridos
+   - Valida y guarda los cambios
+   - Registra el resultado
+5. Mantiene un log detallado de todo el proceso
+6. Maneja errores y reintentos cuando es necesario
+
+## Características Clave
+
+- Automatización robusta de procesos manuales
+- Manejo de errores y recuperación
+- Registro detallado de operaciones
+- Sistema modular y extensible
+- Validación de datos y operaciones
+- Medición de rendimiento y tiempos
+- Soporte para múltiples tipos de datos
+- Capacidad de procesamiento masivo
+
+El sistema está diseñado para ser:
+- Confiable: Maneja errores y excepciones
+- Eficiente: Procesa múltiples OTs en batch
+- Flexible: Permite diferentes tipos de operaciones
+- Mantenible: Código modular y bien estructurado
+- Trazable: Registro detallado de operaciones
