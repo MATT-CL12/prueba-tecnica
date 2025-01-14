@@ -1,0 +1,59 @@
+{
+    "Campos_OT": ["UBICACION",
+                "OT_PADRE",
+                "CLASIFICACION",
+                "DESCRIPCION",
+                "TIPO_TRABAJO",
+                "TIPO_PROYECTO",
+                "PRIORIDAD",
+                "RESIDUOS",
+                "HEREDA",
+                "GROT",
+                "FSE",
+                "ACCION",
+                "INICIO_PREVISTO",
+                "FIN_PREVISTO",
+                "INICIO_PROGRAMADO",
+                "FIN_PROGRAMADO",
+                "NO_ANTERIOR",
+                "MAS_TARDAR",
+                "DURACION",
+                "PLANIFICADOR",
+                "INTERVENTOR",
+                "RESPONSABLE",
+                "UNIDAD_NEGOCIO",
+                "ACTIVIDAD_COSTEO",
+                "CONTRATO"],
+
+    "Campos_Tarea": ["TAREA",
+                    "RESUMEN"],
+    
+    "Campos_Mano_de_obra": ["TAREA",
+                          "TIPO_CUADRILLA",
+                          "HORA"],    
+                          
+    "Campos_Material": ["TAREA",
+                        "TIPO_LINEA",
+                          "PARTE",
+                          "ALMACEN",
+                          "CANTIDAD"],
+                         
+    "Campos_Servicio": ["TAREA",
+                        "TIPO_LINEA",
+                      "SERVICIO",
+                      "CANTIDAD"],
+                      
+    "Campos_Asignacion":["TAREA",
+                        "TIPO_CUADRILLA",
+                        "MANO_OBRA",
+                        "HORA"],
+
+    "Campos_Cancelar": ["MOTIVO_RECHAZO"],
+
+    "Flujo_OT":{
+      "ESPPLAN": [],
+      "ASIGNADA":["ESSPLAN","PROG"],
+      "ESPPROG":["ESSPLAN","ESSPLAN2","PLANEADA","PLANEADA2"],
+      "ESPPO":["ESSPLAN","ESSPLAN2","PLANEADA","PLANEADA2"]      
+    }
+}

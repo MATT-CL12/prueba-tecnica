@@ -1,0 +1,7 @@
+{
+    "webdriver_path": "chromedriver_win32//chromedriver.exe",
+    "url_path": "https://eammaximo.corp.epm.com.co/maximo/webclient/login/login.jsp?appservauth=true",
+    "USER": "alopagui", 
+    "PASS": "Sacounpapelillo9710+",
+    "idioma": "spanish"
+}

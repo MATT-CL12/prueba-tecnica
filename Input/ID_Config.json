@@ -1,0 +1,187 @@
+{
+    "Login": {
+        "username": "j_username",
+        "password": "j_password",
+        "loginbutton": "loginbutton",
+        "validador": "titlebar-tb_username",
+        "loginlist": {
+            "list_name": "//*[@id=\"langselect\"]",
+            "english": "//*[@id=\"langselect\"]/option[1]",
+            "spanish": "//*[@id=\"langselect\"]/option[2]"
+        }
+    },
+
+    "Menus": {
+        "Menu_OT": ["titlebar-tb_gotoButton","menu0_WO_MODULE_a_tnode","menu0_WO_MODULE_sub_changeapp_PLUSDWOTRK_a_tnode"]
+    },
+
+    "Buscadores": {
+        "OTs": {
+            "Buscar": "quicksearch",
+            "Crear_OT": "toolactions_INSERT-tbb_anchor",
+            "Validador": {"Orden_trabajo": "mad3161b5-tb",
+                          "Planes": "maf77dfec-tb",
+                          "mano_de_obra": "maf77dfec-tb",
+                          "servicios": "maf77dfec-tb",
+                          "Asignaciones": "m91526165-tb"},
+            "OT_No_Existe": "m88dbf6ce-pb"
+        }
+    },
+    "Orden_trabajo": {
+        "VENTANA": "mbf28cd64-tab_anchor",
+        "Estado_MX": "md3801d08-tb",
+        "DESCRIPCION": "mad3161b5-tb2",
+        "UBICACION": "m7b0033b9-tb",
+        "OT_PADRE":"m48b379ea-tb",
+        "TIPO_TRABAJO": "me2096203-tb",
+        "TIPO_PROYECTO": {
+            "SEARCH":"m52b98083-img", 
+            "PROYECTO_NEGOCIO": "menu0_N_OPTION_a_tnode"
+        },
+        "CLASIFICACION": "mc8f7970f-tb",
+        "PRIORIDAD": "mdca63783-tb",
+        "RESIDUOS": "m34dcdfd6-cb_img",
+        "HEREDA": "m31637311-cb_img",
+        "GROT": "m6d641452-tb",
+        "FSE": "m5506f4a4-tb",
+        "ACCION": "m6a44026d-tb",
+        "UNIDAD_NEGOCIO": "macef2b7e-tb",
+        "ACTIVIDAD_COSTEO": "me2e68924-tb",
+        "INICIO_PREVISTO" :"mf4f5615a-tb",
+        "FIN_PREVISTO": "m83f251cc-tb",
+        "INICIO_PROGRAMADO": "m134d4c5d-tb",
+        "FIN_PROGRAMADO" :"m644a7ccb-tb",
+        "NO_ANTERIOR": "m73f396df-tb",
+        "MAS_TARDAR": "mcca82de-tb",
+        "DURACION" :"m1d007138-tb",
+        "PLANIFICADOR" :"m19a70105-tb",
+        "INTERVENTOR":"mb2eb834-tb",
+        "RESPONSABLE" :"mec969533-tb",
+        "CONTRATO" :"m366718dc-tb",
+        "Error_Dato": "mbf28cd64-tab_er_img",
+        "Guardar": {
+            "boton_guardar1":"toolactions_SAVE-tbb_image", 
+            "boton_guardar2": "toolactions_SAVE-tbb_anchor",
+            "ventana_aceptar": "m88dbf6ce-pb",
+            "No_guardar": "m96ad0396-pb" 
+        }
+    },
+    
+    "Planes":{
+        "VENTANA": "m356798d1-tab_anchor",
+        "Guardar": {
+            "boton_guardar1":"toolactions_SAVE-tbb_image", 
+            "boton_guardar2": "toolactions_SAVE-tbb_anchor",
+            "ventana_aceptar": "m88dbf6ce-pb",
+            "No_guardar": "m96ad0396-pb" 
+        },
+        "tareas": {
+            "Fila_Nueva": "mbb442a0c_bg_button_addrow-pb",
+            "Eliminar_Filas": "mbb442a0c_tdrow_[C:17]_toggleimage-ti[R:0]_img",
+            "Ver_Mas_Filas": "mbb442a0c-ti7_img",
+            "TAREA": "mb804724a-tb",
+            "RESUMEN": "mb804724a-tb2",
+            "Error_Dato": "m356798d1-tab_er_img"
+            },
+            
+
+        "mano_de_obra": {
+            "VENTANA": "m95d763ff-tab_anchor",
+            "Fila_Nueva": "m5e4b62f0_bg_button_addrow-pb",
+            "Eliminar_Filas": "m5e4b62f0_tbod_tdrow-tr[R:0]",
+            "Ver_Mas_Filas": "m5e4b62f0-ti7_img",
+            "TAREA": "m1e59f0df-tb",
+            "TIPO_CUADRILLA": "m962b507e-tb",  
+            "HORA": "m8c0ce658-tb",
+            "Error_Dato": "m356798d1-tab_er_img"
+            },
+        
+        "servicios":{
+            "VENTANA": "m34437806-tab_anchor",
+            "Fila_Nueva": "m3b684d22_bg_button_addrow-pb", 
+            "Eliminar_Filas": "m3b684d22_tdrow_[C:9]_toggleimage-ti[R:0]_img",
+            "Ver_Mas_Filas": "m3b684d22-ti7_img",
+            "TAREA": "m698052c5-tb",
+            "TIPO_LINEA":{
+                "SEARCH":"mf089037f-img", 
+                "SERVICIO_ESTANDAR": "menu0_STDSERVICE_OPTION_a_tnode"
+            },
+            "SERVICIO": "m7337cfbb-tb",
+            "CANTIDAD": "m62dc15f8-tb", 
+            "Ventana_Emergente_error": "m34437806-tab_anchor",
+            "Error_Dato": "m356798d1-tab_er_img"
+            },
+            
+        "materiales":{
+            "VENTANA": "m465d1be5-tab_anchor",
+            "Fila_Nueva": "md16d5b2e_bg_button_addrow-pb",
+            "Eliminar_Filas":"md16d5b2e_tdrow_[C:14]_toggleimage-ti[R:0]_img",
+            "Ver_Mas_Filas": "md16d5b2e-ti7_img",
+            "TIPO_LINEA": {
+                "SEARCH": "mae05abd4-img",
+                "PARTE": "menu0_ITEM_OPTION_a_tnode"
+            },
+            "TAREA": "m370cfa6e-tb",
+            "PARTE":"m7b7fabd9-tb",
+            "TIPO_COSTO": "mf69d0b54-tb",
+            "CUENTA_AUXILIAR":"m8f787d30-tb",
+            "ALMACEN": "me1fad1bd-tb",
+            "CANTIDAD": "m39d7725c-tb",
+            "Error_Dato": "m356798d1-tab_er_img"
+        
+        }
+    }, 
+
+    "Asignaciones": {
+            "VENTANA": "m308a50dd-tab_anchor",
+            "Guardar": {
+                "boton_guardar1":"toolactions_SAVE-tbb_image", 
+                "boton_guardar2": "toolactions_SAVE-tbb_anchor",
+                "ventana_aceptar": "m88dbf6ce-pb",
+                "No_guardar": "m96ad0396-pb" 
+            },
+            "asignaciones":{
+                "Fila_Nueva": "m6798a95d_bg_button_addrow-pb",
+                "Eliminar_Filas":"m6798a95d_tdrow_[C:16]_toggleimage-ti[R:0]_img",
+                "Ver_Mas_Filas": "m6798a95d-ti7_img",
+                "TAREA": "mc98901e7-tb",
+                "TIPO_CUADRILLA": "mb9e3f568-tb",
+                "MANO_OBRA": "m5080505d-tb",
+                "HORA": "m2403b4a5-tb",
+                "Error_Dato": "m308a50dd-tab_er_img",
+                "Ventana_Emegente_error": "m88dbf6ce-pb"
+                }
+    },
+
+    "Cancelar": {
+        "MOTIVO_RECHAZO": "m88f3c634-tb"
+    },
+
+    "flujo_OT": {
+        "ESPPLAN": {
+            "ESPPLAN" : []
+        },
+        "ASIGNADA": {
+            "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image","mb64e0e96-rb", "m37917b04-pb", "mc1493e00-rb", "m37917b04-pb", "ROUTEWF__-tbb_image", "mb64e0e96-rb", "m37917b04-pb"],
+            "PROG": ["ROUTEWF__-tbb_image", "m71741679-rb", "md875c1f9-pb", "m15f1c9f0-pb"]
+        },
+        "ESPPROG":{
+            "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "mb64e0e96-rb", "m37917b04-pb", "mc1493e00-rb", "m37917b04-pb"],
+            "ESSPLAN2":["m15f1c9f0-pb"],
+            "PLANEADA": ["ROUTEWF__-tbb_image","m58406fba-rb","m37917b04-pb"],
+            "PLANEADA2":["m15f1c9f0-pb"]
+        },
+        "ESPPO":{
+            "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "mb64e0e96-rb", "m37917b04-pb", "mb64e0e96-rb", "m37917b04-pb","ROUTEWF__-tbb_image","mb64e0e96-rb","m37917b04-pb"],
+            "ESSPLAN2":["m15f1c9f0-pb"],
+            "PLANEADA": ["ROUTEWF__-tbb_image","m58406fba-rb","m37917b04-pb"],
+            "PLANEADA2":["m15f1c9f0-pb"]
+        },
+        "CANCELADA":{
+            "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image"]
+        }
+    }
+
+  }
+  
+
