@@ -10,7 +10,7 @@ Este proyecto está diseñado para automatizar la carga masiva de órdenes de tr
 - **Configurabilidad**: Personalización de los parámetros de entrada mediante archivos JSON y Excel.
 
 ## Requisitos del Sistema
-- **Lenguaje**: Python 3.13.1 (o superior).
+- **Lenguaje**: Python 3.9.21.
 - **Bibliotecas**:
   - pandas
   - selenium
