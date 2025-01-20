@@ -42,13 +42,10 @@ class WebUploader_Class:
         self.driver.maximize_window()
         
         self.driver.get(Data_config["url_path"])
-        
-        self.logs = ""
-        self.errors = ""
 
         if verbose == True:
-            self.logs += f"Web Driver iniciado correctamente, URL:'{Data_config['url_path']}' - Lista para ser usada por el bot\n"
-            self.logs += "--------------------------------------------------------\n"
+            print("Web Driver iniciado correctamente, URL:'", Data_config["url_path"], "' - Lista para ser usada por el bot")
+            print("--------------------------------------------------------")
         
     def cerrar_navegador(self):
         self.driver.quit()
@@ -96,14 +93,14 @@ class WebUploader_Class:
             name_sesion = self.click_until_interactable(By.ID, IDs["validador"], click=False)
             sesion_started = name_sesion.is_displayed()
             if verbose==True:
-                self.logs += f"Sesion iniciada correctamente con la cuenta: {self.username}\n"
-                self.logs += "--------------------------------------------------------\n"
+                print("Sesion iniciada correctamente con la cuenta:", self.username)         
+                print("--------------------------------------------------------")
                 
             return sesion_started
         
         # Error al no encontrar el elemento buscado por Selenium
         except TimeoutException:
-            self.errors += f"Error: \n-Web_Uploader_Class \n-Metodo: log_in \nDescripción: No se ha podido iniciar sesión correctamente con la cuenta {self.username}\n"
+            print('Error: \n-Web_Uploader_Class \n-Metodo: log_in \nDescripción: No se ha podido iniciar sesión correctamente con la cuenta', self.username)
             sesion_started = False
             return sesion_started
         
@@ -133,14 +130,14 @@ class WebUploader_Class:
                 sleep(0.5)
                 menu_button = self.click_until_interactable(By.ID, selected)
             if verbose == True:
-                self.logs += "Menu encontrado\n"
-                self.logs += "--------------------------------------------------------\n"
+                print("Menu encontrado")
+                print("--------------------------------------------------------")
             sleep(1)
             return   validador  
                 
         # Error al no encontrar el elemento buscado por Selenium
         except TimeoutException:
-            self.errors += "Error: \n-Web_Uploader_Class \n-Metodo: log_menu \nDescripción: No se ha podido acceder al botón indicado\n"
+            print('Error: \n-Web_Uploader_Class \n-Metodo: log_in \nDescripción: No se ha podido acceder al boton indicado')
             validador = False
             return validador
      
@@ -153,8 +150,8 @@ class WebUploader_Class:
             OT_actual.Validar_Error_cambiar_OT(IDs, False)
            
             if verbose_crearOT == True:
-                self.logs += f"\n--------------------------------------------------------\n"
-                self.logs += f"Se crea exitosamente la OT {OT_actual.OT} del ID {OT_actual.ID}\n"
+                print("--------------------------------------------------------")
+                print(f"Se crea exitosamente la OT {OT_actual.OT} del ID {OT_actual.ID}")
                 
         #Si el excel contiene un numero de OT, se busca dicha OT en MX
         else:
@@ -164,8 +161,8 @@ class WebUploader_Class:
                 OT_actual.Cambiar_ventana("Orden_trabajo", IDs)
             OT_actual.Evaluar_Estado_OT(IDs)
             if verbose_crearOT == True:
-                self.logs += f"\n--------------------------------------------------------\n"
-                self.logs += f"La OT {OT_actual.OT} con ID {OT_actual.ID} existe y fue encontrada con éxito\n"
+                print("--------------------------------------------------------")
+                print(f"La OT {OT_actual.OT} con ID {OT_actual.ID} existe y fue encontrada con exito")
      
     #---------------------------------------------------------------------------------------------------
     def buscar_valor(self, OT_object, IDs, enter_key = False, verbose_buscar=True):
@@ -208,7 +205,7 @@ class WebUploader_Class:
         
         # Error al no encontrar el elemento buscado por Selenium
         except TimeoutException:
-            OT_object.ERROR_OT = f"'Error en: \n-WebUploader_Class \n-Metodo: buscar_valor \nDescripción: La OT '{OT_object.OT}' con ID '{OT_object.ID}' no fue posible encontrarla, error del BOT al usar el buscador, id no encontrado\n"
+            OT_object.ERROR_OT = f"'Error en: \n-WebUploader_Class \n-Metodo: buscar_valor \nDescripción: La OT '{OT_object.OT}' con ID '{OT_object.ID}' no fue posible encontrarla, error del BOT al usar el buscador, id no encontrado"
             raise Exception(OT_object.ERROR_OT)
                       
     #---------------------------------------------------------------------------------------------------
@@ -312,58 +309,55 @@ class Orden_Trabajo_Class():
         self.RESPONSABLE: str = self.Convertir_a_tipo(Data_OT['RESPONSABLE'], str, error_print=['OT','RESPONSABLE'])
         self.CONTRATO: str = self.Convertir_a_tipo(Data_OT['CONTRATO'] , str, error_print=['OT','CONTRATO'])
         self.OT_existente: bool = False if isnull(self.OT) else True
-        self.ESTADO = "ESPPLAN"  
-        self.Ventana_actual = "Orden_trabajo"
-        self.logs = ""
+        self.ESTADO = "ESPPLAN"
         self.ERROR_OT = ''
-        #Instancias de las clases internas
-        #Instancia de tipo tarea
+        self.Ventana_actual = "Orden_trabajo"
+        # Instancias de las clases internas
+        # Instancia de tipo tarea
         Listado_Tareas = []
         for row, Datos in DF_TAREAS_init.iterrows():
             tarea_actual = self.Tareas_class(self, Datos)              
-            Listado_Tareas.append(tarea_actual)    
-        
+            Listado_Tareas += [tarea_actual]  
+            
         self.Listado_Tareas: self.Tareas_class = Listado_Tareas
-        
-        #Instancia de tipo mano de obra
+
+        # Instancia de tipo mano de obra
         Listado_Mano_de_obra = []
         for row, Datos in DF_MANO_DE_OBRA_init.iterrows():
             mano_de_obra_actual = self.Mano_de_obra_class(self, Datos)              
-            Listado_Mano_de_obra.append(mano_de_obra_actual)    
-        
+            Listado_Mano_de_obra += [mano_de_obra_actual]  
+            
         self.Listado_Mano_de_obra: self.Mano_de_obra_class = Listado_Mano_de_obra
-        
-        #Instancia de tipo materiales
+
+        # Instancia de tipo materiales
         Listado_Materiales = []
         for row, Datos in DF_MATERIALES_init.iterrows():
             materiales_actual = self.Materiales_class(self, Datos)              
-            Listado_Materiales.append(materiales_actual)    
-        
+            Listado_Materiales += [materiales_actual] 
+            
         self.Listado_Materiales: self.Materiales_class = Listado_Materiales
-        
-        
-        #Instancia de tipo servicios
+
+        # Instancia de tipo servicios
         Listado_Servicios = []
         for row, Datos in DF_SERVICIOS_init.iterrows():
             servicios_actual = self.Servicios_class(self, Datos)              
-            Listado_Servicios.append(servicios_actual)    
-        
+            Listado_Servicios += [servicios_actual]  
+            
         self.Listado_Servicios: self.Servicios_class = Listado_Servicios
-        
-        
-        #Instancia de tipo asignaciones
+
+        # Instancia de tipo asignaciones
         Listado_Asignaciones = []
         for row, Datos in DF_MANO_DE_OBRA_init.iterrows():
             asignaciones_actual = self.Asignaciones_class(self, Datos)              
-            Listado_Asignaciones.append(asignaciones_actual)    
-        
+            Listado_Asignaciones += [asignaciones_actual]  
         self.Listado_Asignaciones: self.Asignaciones_class = Listado_Asignaciones
-        
+
  
 # =============================================================================
     #%% Metodos de las clase orden de trabajo        
     #---------------------------------------------------------------------------------------------------
     def guardarOT(self, IDs, verbose=False):
+        sleep(0.5)
         """
         Función para guarda la Orden de Trabajo (OT) en IBM MAXIMO.
 
@@ -393,12 +387,12 @@ class Orden_Trabajo_Class():
                     ventana_aceptar = self.WebUploader.click_until_interactable(By.ID, IDs["Guardar"]["ventana_aceptar"], tiempo_wait=5)
                    
                     #Exception 1: Debido a un error de diligenciamiento en la OT
-                    self.ERROR_OT = f"'Error en: \n-Orden_Trabajo_Class \n-Metodo: guardarOT \nDescripción: La OT '{self.OT}' con ID '{self.ID}' no se guardo por algun error en los datos cargados en MX\n"
+                    self.ERROR_OT = f"'Error en: \n-Orden_Trabajo_Class \n-Metodo: guardarOT \nDescripción: La OT '{self.OT}' con ID '{self.ID}' no se guardo por algun error en los datos cargados en MX"
                     raise Exception(self.ERROR_OT)
                 #Si la ventana de error no aparece, quiere decir que la OT se guardo correctamente
                 except TimeoutException:
                      if verbose:
-                         self.logs += "La OT con ID: {self.ID} se guarda con el número de OT: {self.OT}\n"
+                         print("La OT con ID: ", self.ID, " se guarda con el número de OT:", self.OT)
             #En caso de no encontrar el primer ID del boton guardar, se intenta con el id2
             except NoSuchElementException:
                 elementoguardar = self.WebUploader.click_until_interactable(By.ID, IDs["Guardar"]["boton_guardar2"])
@@ -407,16 +401,16 @@ class Orden_Trabajo_Class():
                     ventana_aceptar = self.WebUploader.click_until_interactable(By.ID, IDs["Guardar"]["ventana_aceptar"], tiempo_wait=5)
                     
                     #Exception 1: Debido a un error de diligenciamiento en la OT
-                    self.ERROR_OT = f"'Error en: \n-Orden_Trabajo_Class \n-Metodo: guardarOT \nDescripción: La OT '{self.OT}' con ID '{self.ID}' no se guardo por algun error en los datos cargados en MX\n"
+                    self.ERROR_OT = f"'Error en: \n-Orden_Trabajo_Class \n-Metodo: guardarOT \nDescripción: La OT '{self.OT}' con ID '{self.ID}' no se guardo por algun error en los datos cargados en MX"
                     raise Exception(self.ERROR_OT)
                 #Si la ventana de error no aparece, quiere decir que la OT se guardo correctamente
                 except TimeoutException:
                      if verbose:
-                         self.logs += "La OT con ID: {self.ID} se guarda con el número de OT: {self.OT}\n"
+                         print("La OT con ID: ", self.ID, " se guarda con el número de OT:", self.OT)
                        
         except:
             #Exception 2: El BOT no puede encontrar el boton de guardar con el ID especificado
-            self.ERROR_OT = f"'Error en: \n-Orden_Trabajo_Class \n-Metodo: guardarOT \nDescripción: La OT {self.OT} con ID {self.ID} no fue posible guardar, el BOT no encontro el boton de guardar\n"
+            self.ERROR_OT = f"'Error en: \n-Orden_Trabajo_Class \n-Metodo: guardarOT \nDescripción: La OT {self.OT} con ID {self.ID} no fue posible guardar, el BOT no encontro el boton de guardar"
             raise Exception(self.ERROR_OT)
         
     #---------------------------------------------------------------------------------------------------
@@ -448,7 +442,7 @@ class Orden_Trabajo_Class():
                 ventana_no_guardar= self.WebUploader.click_until_interactable(By.ID, IDs["Buscadores"]["OTs"]["OT_No_Existe"], tiempo_wait=5)
                 
                 #Except 1: Error por que la OT buscada no existe
-                self.ERROR = f"'Error en: \n-WebUploader_Class \n-Metodo: buscar_valor \nDescripción: La OT {self.OT} con ID {self.ID} no existe en MX\n"
+                self.ERROR = f"'Error en: \n-WebUploader_Class \n-Metodo: buscar_valor \nDescripción: La OT {self.OT} con ID {self.ID} no existe en MX"
                 raise Exception(self.ERROR)
             
             except TimeoutException:
@@ -461,7 +455,7 @@ class Orden_Trabajo_Class():
                 ventana_no_guardar= self.WebUploader.click_until_interactable(By.ID, IDs["Buscadores"]["OTs"]["OT_No_Existe"], tiempo_wait=5)
                 
                 #Except 1: Error por que la OT buscada no existe
-                self.ERROR = f"'Error en: \n-WebUploader_Class \n-Metodo: buscar_valor \nDescripción: La OT {self.OT} con ID {self.ID} no existe en MX\n"
+                self.ERROR = f"'Error en: \n-WebUploader_Class \n-Metodo: buscar_valor \nDescripción: La OT {self.OT} con ID {self.ID} no existe en MX"
                 raise Exception(self.ERROR)
             
             except TimeoutException:
@@ -470,7 +464,7 @@ class Orden_Trabajo_Class():
                    
     
     #---------------------------------------------------------------------------------------------------
-    def Ingresar_Datos(self, columnas, IDs, Object_OT, instancia_interna = None, verbose=False):
+    def Ingresar_Datos(self, columnas, IDs, Object_OT, instancia_interna=None, verbose=False):
         """
         Ingresa datos en la interfaz de usuario de IBM MAXIMO para una Orden de Trabajo (OT).
 
@@ -490,65 +484,87 @@ class Orden_Trabajo_Class():
         Raises
         ------
         Exception
-            Exception 1: Se genera una excepción si el dato ingresado a MX genera un error dentro de la web, eso pasa porque se captura la ventana de error de MX y advierte sobre un error del dato ingresado. Por tanto, no es un error del BOT, se trata de un error de diligenciamiento, puesto que el dato que se intenta ingresar en la celda no es aceptado por MX
-            Exception 2: Error de estado, solo se puede trabajar con OTs en estado ESPPLAN
-        
+            Exception 1: Error de diligenciamiento en la OT debido a datos no aceptados por MX.
+            Exception 2: Error de estado, solo se puede trabajar con OTs en estado ESPPLAN.
+
         Returns
         -------
         None.
-            
         """
-        if Object_OT.ESTADO == "ESPPLAN":
-            #Manipulación de la instancia interna, si aplica
-            if instancia_interna is None:  
-                instancia_interna = Object_OT
-            # Proceso iterativo de diligenicamiento de la información 
-            if verbose:
-                self.logs +=f"\n--------------------------------------------------------\n"
-                self.logs += f"    OT con ID {Object_OT.ID}, OT MX {Object_OT.OT}\n"
-            for row in columnas:
-                #Captura del parametro a diligenciar
-                valor_celda = getattr(instancia_interna, row)
-                    
-                #Si el dato a ingresar es diferente a NA (Celda con dato en el excel), se ingresa
-                if valor_celda is not None:
-                    #Si el dato es tipo bool, se da click dependiendo si esta marcado o no
+        if Object_OT.ESTADO != "ESPPLAN":
+            # Exception 2: Error de estado, solo se permiten OTs en ESPPLAN
+            self.ERROR_OT = (
+                f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Ingresar_Datos \n"
+                f"Descripción: La OT {Object_OT.OT} con ID {Object_OT.ID} no se encuentra en estado 'ESPPLAN', no es posible modificar"
+            )
+            raise Exception(self.ERROR_OT)
+
+        # Manipulación de la instancia interna, si aplica
+        if instancia_interna is None:
+            instancia_interna = Object_OT
+
+        # Proceso iterativo de diligenciamiento de la información
+        if verbose:
+            print('--------------------------------------------------------')
+            print(f"    OT con ID {Object_OT.ID}, OT MX {Object_OT.OT}")
+
+        for row in columnas:
+            # Captura del parámetro a diligenciar
+            valor_celda = getattr(instancia_interna, row)
+
+            if valor_celda is None:
+                if verbose:
+                    print(f"        {Object_OT.Ventana_actual}.{row}:  ''")
+                continue
+
+            for intento in range(2):  # Validar al menos dos veces
+                try:
+                    # Si el dato es tipo bool, se da clic dependiendo si está marcado o no
                     if isinstance(valor_celda, bool):
-                        if valor_celda==False:
-                            #Se da click para desactivar el checkbox
-                            elemento = self.WebUploader.click_until_interactable(By.ID, IDs[row])
-                    
-                    #Si el dato es tipo texto o int, se typea el dato
-                    elif isinstance(valor_celda, str) or isinstance(valor_celda, int):
-                        if isnull(valor_celda)==False:
-                            elemento = self.WebUploader.click_until_interactable(By.ID, IDs[row])
-                            elemento.clear()
-                            elemento.send_keys((str(valor_celda) + Keys.TAB))
-                            
-                    #Si el dato es tipo list, se recorre la lista
+                        if not valor_celda:
+                            self.WebUploader.click_until_interactable(By.ID, IDs[row])
+
+                    # Si el dato es tipo texto o int, se escribe el dato
+                    elif isinstance(valor_celda, (str, int)) and not isnull(valor_celda):
+                        elemento = self.WebUploader.click_until_interactable(By.ID, IDs[row])
+                        elemento.clear()
+                        elemento.send_keys(str(valor_celda) + Keys.TAB)
+
+                    # Si el dato es tipo list, se recorre la lista
                     elif isinstance(valor_celda, list):
                         for i in valor_celda:
-                            elemento = self.WebUploader.click_until_interactable(By.ID, IDs[row][i])
-                    
-                    #----------------------------------------------------------------
-                    #En caso de haber un error al cargar el dato en MX, se identifica
+                            self.WebUploader.click_until_interactable(By.ID, IDs[row][i])
+
+                    # Validar si hay un error en el ingreso de datos
                     try:
                         self.WebUploader.click_until_interactable(By.ID, IDs["Error_Dato"], click=False, tiempo_wait=2.5)
-                        
-                        #Exception 1: Debido a un error de diligenciamiento en la OT
-                        self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Ingresar_Datos \nDescripción: La OT con ID {Object_OT.ID} en la ventana {Object_OT.Ventana_actual} presenta un error en la celda {row} al ingresarlo a MX, validar el dato que desea cargar\n"
-                        raise Exception(self.ERROR_OT)
+
+                        # Exception 1: Error de diligenciamiento en la OT
+                        self.ERROR_OT = (
+                            f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Ingresar_Datos \n"
+                            f"Descripción: La OT con ID {Object_OT.ID} en la ventana {Object_OT.Ventana_actual} "
+                            f"presenta un error en la celda {row} al ingresarlo a MX, validar el dato que desea cargar"
+                        )
+                        if intento == 1:  # Después del segundo intento
+                            raise Exception(self.ERROR_OT)
+                        else:
+                            if verbose:
+                                print(f"Reintentando ingreso de {row}, intento {intento + 1}...")
+                                sleep(1.5)
                     except TimeoutException:
                         if verbose:
-                            self.logs +=f"        {Object_OT.Ventana_actual}.{row}: {valor_celda}\n"
-                              
-                elif verbose:
-                    self.logs +=f"        {Object_OT.Ventana_actual}.{row}:  ''\n"
-        else:
-            #Exception 2: Error de estado, solo se permiten OTs en ESPPLAN 
-            self.ERROR_OT = f"'Error en: \n-Orden_Trabajo_Class \n-Metodo: Ingresar_Datos \nDescripción: La OT {Object_OT.OT} con ID {Object_OT.ID} no se encuentra en estado 'ESSPLAN', no es posible modificar\n"
-            raise Exception(self.ERROR_OT)
-        
+                            print(f"        {Object_OT.Ventana_actual}.{row}: {valor_celda}")
+                        break  # Salir del ciclo de reintento si no hay error
+
+                except Exception as e:
+                    if intento == 1:
+                        raise e
+                    else:
+                        if verbose:
+                            print(f"Error en intento {intento + 1} para {row}: {e}")
+                            sleep(1.5)
+
+            
     #---------------------------------------------------------------------------------------------------        
     def Cambiar_ventana(self, ventana, IDs):
         """
@@ -606,17 +622,17 @@ class Orden_Trabajo_Class():
             if (informacion==str(self.OT) and self.OT_existente) or not (self.OT_existente):
                 self.OT = int(informacion)
                 if verbose:
-                    self.logs +="\n--------------------------------------------------------\n"
-                    self.logs +=f"*OT MX: {informacion}\n"
+                    print("--------------------------------------------------------")
+                    print('*OT MX: ', informacion) 
                   
             else:
                 #Exception 1: OT buscada no coincide con la parametrizada
-                self.ERROR_OT = f"'Error en: \n-WebUploader_Class \n-Metodo: Capturar_Numero_OT \nDescripción: La OT con ID {self.ID}, no coincide con la encontrada en MX. {self.OT} =! {int(informacion)}\n"
+                self.ERROR_OT = f"'Error en: \n-WebUploader_Class \n-Metodo: Capturar_Numero_OT \nDescripción: La OT con ID {self.ID}, no coincide con la encontrada en MX. {self.OT} =! {int(informacion)}"
                 raise Exception(self.ERROR_OT)
                  
         except:
             #Exception 2: Error de ID, no se encontro el boton
-            self.ERROR_OT = f"'Error en: \n-WebUploader_Class \n-Metodo: Capturar_Numero_OT \nDescripción: En la OT con ID {self.ID} no fue posible caputar el numero de OT en MX, el BOT no encontro el id especificado\n"
+            self.ERROR_OT = f"'Error en: \n-WebUploader_Class \n-Metodo: Capturar_Numero_OT \nDescripción: En la OT con ID {self.ID} no fue posible caputar el numero de OT en MX, el BOT no encontro el id especificado"
             raise Exception(self.ERROR_OT)
             
     #---------------------------------------------------------------------------------------------------
@@ -666,11 +682,11 @@ class Orden_Trabajo_Class():
         except ValueError:
             if OT_object is not None:
                 # Exception 1: Error de lectura de datos
-                OT_object.ERROR_OT = f"Error en: \n-WebUploader_Class \n-Metodo: _init_Convertir_a_tipo \nDescripción: Error de lectura de datos en la OT con ID {self.ID}, en la clase {error_print[0]}, en el parametro {error_print[1]}\n"
+                OT_object.ERROR_OT = f"Error en: \n-WebUploader_Class \n-Metodo: _init_Convertir_a_tipo \nDescripción: Error de lectura de datos en la OT con ID {self.ID}, en la clase {error_print[0]}, en el parametro {error_print[1]}"
                 raise Exception(OT_object.ERROR_OT)
             else:
                 # Exception 1: Error de lectura de datos
-                self.ERROR_OT = f"Error en: \n-WebUploader_Class \n-Metodo: _init_Convertir_a_tipo \nDescripción: Error de lectura de datos en la OT con ID {self.ID}, en la clase {error_print[0]}, en el parametro {error_print[1]}\n"
+                self.ERROR_OT = f"Error en: \n-WebUploader_Class \n-Metodo: _init_Convertir_a_tipo \nDescripción: Error de lectura de datos en la OT con ID {self.ID}, en la clase {error_print[0]}, en el parametro {error_print[1]}"
                 raise Exception(self.ERROR_OT)
 
             
@@ -693,7 +709,7 @@ class Orden_Trabajo_Class():
             sleep(0.5)
             
         except:
-             self.ERROR_OT = "Error en: \n-Orden_Trabajo_Class \n-Metodo: Fila_Nueva \nDescripción: Error al encontro id\n"
+             self.ERROR_OT = "Error en: \n-Orden_Trabajo_Class \n-Metodo: Fila_Nueva \nDescripción: Error al encontro id"
              raise Exception(self.ERROR_OT)
              
     def Eliminar_Filas(self, tipo, IDs, labor_bot="MODIFICAR"):
@@ -743,7 +759,7 @@ class Orden_Trabajo_Class():
                 #Guardar los cambios tras eliminar las filas
                 self.guardarOT(IDs)
             except:
-                self.ERROR_OT = "Error en: \n-Orden_Trabajo_Class \n-Metodo: Eliminar_Filas \nDescripción: Error al encontro id\n"
+                self.ERROR_OT = "Error en: \n-Orden_Trabajo_Class \n-Metodo: Eliminar_Filas \nDescripción: Error al encontro id"
                 raise Exception(self.ERROR_OT)
             
     def Flujo_OT (self, IDs, Estado_deseado, listado_flujo, verbose=True):
@@ -751,11 +767,11 @@ class Orden_Trabajo_Class():
         self.Evaluar_Estado_OT(IDs)        
         if self.ESTADO == Estado_deseado:  
             if verbose==True:
-                self.logs +=f"La OT {self.OT} con ID {self.ID} ya se encuentra en estado: {Estado_deseado}\n"
+                print(f"La OT {self.OT} con ID {self.ID} ya se encuentra en estado: {Estado_deseado}")
         
         else:
             #Verificar si el estado esta parametrizado en el bot
-            if (Estado_deseado == 'ASIGNADA') or (Estado_deseado == 'ESPPROG'):
+            if (Estado_deseado == 'ASIGNADA') or (Estado_deseado == 'ESPPROG') or (Estado_deseado == 'ESPPO'):
                 if self.ESTADO =='ESPPLAN':     
                     conta_errores = 0                   #Variable para validar la cantidad de veces que se presenta error al darle flujo
                     tam_estados = len(listado_flujo)    #size del listado de estados
@@ -767,7 +783,8 @@ class Orden_Trabajo_Class():
                             for id_i in IDs["flujo_OT"][Estado_deseado][estado]:
                                 conta2 = conta2 + 1
                                 elemento = self.WebUploader.click_until_interactable(By.ID, id_i, tiempo_wait=90) 
-                            
+                                sleep(2)
+                                
                             #Evaluar el estado de la OT
                             self.Evaluar_Estado_OT(IDs)
                             if self.ESTADO == Estado_deseado:
@@ -775,18 +792,18 @@ class Orden_Trabajo_Class():
                         except:
                             conta_errores = conta_errores + 1
                             if (conta_errores>1) | (conta1==tam_estados):
-                                self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, no se encontro el id\n"
+                                self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, no se encontro el id"
                                 raise Exception(self.ERROR_OT)
                             else:
                                 continue
-                
+            
                     if verbose==True:
-                        self.logs +=f"Flujo correcto de la OT {self.OT}: con ID {self.ID}, estado final: {self.ESTADO}\n"
+                        print(f"Flujo correcto de la OT {self.OT}: con ID {self.ID}, estado final: {self.ESTADO}")
                 else:
-                    self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} no se encuentra en estado 'ESPPLAN'\n"
+                    self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} no se encuentra en estado 'ESPPLAN'"
                     raise Exception(self.ERROR_OT)
             else: # Acción por defecto si el estado no coincide con ninguna condición parametrizada en el bot
-                self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, el estado deseado no esta parametrizado en el BOT\n"
+                self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, el estado deseado no esta parametrizado en el BOT"
                 raise Exception(self.ERROR_OT)
 
     def Evaluar_Estado_OT (self, IDs):
@@ -796,7 +813,7 @@ class Orden_Trabajo_Class():
             # Obtener el valor del atributo "ev"
             self.ESTADO = informacion.get_attribute('value')
         except:
-             self.ERROR_OT = (f"Error en: \n-WebUploader_Class \n-Metodo: Evaluar_Estado_OT \nDescripción: No se encontro el estado en MX de la OT: {self.OT}\n")
+             self.ERROR_OT = (f"Error en: \n-WebUploader_Class \n-Metodo: Evaluar_Estado_OT \nDescripción: No se encontro el estado en MX de la OT: {self.OT}")
              raise Exception(self.ERROR_OT) 
           
     def Cancelar_OT(self, IDs, Estado_deseado, listado_flujo, verbose=True):
@@ -815,16 +832,16 @@ class Orden_Trabajo_Class():
                         if self.ESTADO == Estado_deseado:
                             break
                     except:
-                        self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, no se encontro el id\n"
+                        self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, no se encontro el id"
                         raise Exception(self.ERROR_OT)
             
                 if verbose==True:
-                    self.logs +=f"Flujo correcto de la OT {self.OT}: con ID {self.ID}, estado final: {self.ESTADO}\n"
+                    print(f"Flujo correcto de la OT {self.OT}: con ID {self.ID}, estado final: {self.ESTADO}")
             else:
-                self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} no se encuentra en estado 'ESPPLAN'\n"
+                self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} no se encuentra en estado 'ESPPLAN'"
                 raise Exception(self.ERROR_OT)
         else: # Acción por defecto si el estado no coincide con ninguna condición parametrizada en el bot
-            self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, el estado deseado no esta parametrizado en el BOT\n"
+            self.ERROR_OT = f"Error en: \n-Orden_Trabajo_Class \n-Metodo: Flujo_OT \nDescripción: La OT con ID {self.ID} presenta un error al darle flujo a la OT, el estado deseado no esta parametrizado en el BOT"
             raise Exception(self.ERROR_OT)
         
     

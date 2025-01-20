@@ -166,16 +166,8 @@
             "PROG": ["ROUTEWF__-tbb_image", "m71741679-rb", "md875c1f9-pb", "m15f1c9f0-pb"]
         },
         "ESPPROG":{
-            "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "mb64e0e96-rb", "m37917b04-pb", "mc1493e00-rb", "m37917b04-pb"],
-            "ESSPLAN2":["m15f1c9f0-pb"],
-            "PLANEADA": ["ROUTEWF__-tbb_image","m58406fba-rb","m37917b04-pb"],
-            "PLANEADA2":["m15f1c9f0-pb"]
-        },
-        "ESPPO":{
-            "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "mb64e0e96-rb", "m37917b04-pb", "mb64e0e96-rb", "m37917b04-pb","ROUTEWF__-tbb_image","mb64e0e96-rb","m37917b04-pb"],
-            "ESSPLAN2":["m15f1c9f0-pb"],
-            "PLANEADA": ["ROUTEWF__-tbb_image","m58406fba-rb","m37917b04-pb"],
-            "PLANEADA2":["m15f1c9f0-pb"]
+            "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "mb64e0e96-rb", "m37917b04-pb", "mc1493e00-rb", "m37917b04-pb","m15f1c9f0-pb"],
+            "PLANEADA": ["ROUTEWF__-tbb_image","m58406fba-rb","m37917b04-pb","m15f1c9f0-pb"]
         },
         "CANCELADA":{
             "ESSPLAN": ["ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image", "ROUTEWF__-tbb_image"]

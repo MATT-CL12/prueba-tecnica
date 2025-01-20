@@ -1,220 +1,137 @@
-# -*- coding: utf-8 -*-
-"""
-@author: Alejandro López
-Principal
-
-Código para cargar datos de manera masiva en un listado de OT, los datos cargados se encuentran definidos en Config.py
-
----------------------
-Parametros de Entrada
----------------------     
-Config : `archivo.py`
-    Archivo .py con la configuración y parametros del código
-    
-1_OTs_Cargar : `xlsx`
-     Archivo excel con las OT y los parametros a llenar   
-"""
-
 import pandas as pd
-import threading
-import queue
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from WebUploader_Class import WebUploader_Class, Orden_Trabajo_Class
 from time import time
-import datetime
 import json
-import pdb
+import sys
+import datetime
+from threading import current_thread
 
-# Bloqueo para sincronización
-lock = threading.Lock()
+# Clase DualWriter para redireccionar la salida estándar
+time_program = {"start_program": time(), "end_program": 0}
 
-# Inicialización del tiempo de ejecución global
-start_program_time = time()
+class DualWriter:
+    def __init__(self, original_stdout, archivo):
+        self.original_stdout = original_stdout
+        self.archivo = archivo
 
-# Lectura de archivos de configuración
-with open("Input\\User_Config.json", encoding='utf-8') as file:
-    Data_config = json.load(file)
-with open("Input\\ID_Config.json", encoding='utf-8') as file:
-    IDs = json.load(file)
-with open("Input\\Campos_Diligenciar.json", encoding='utf-8') as file:
-    Campos_Diligenciar = json.load(file)
+    def write(self, mensaje):
+        self.original_stdout.write(mensaje)
+        self.archivo.write(mensaje)
 
-# Campos y flujo
-campos_OT = Campos_Diligenciar["Campos_OT"]
-Campos_Tarea = Campos_Diligenciar["Campos_Tarea"]
-Campos_Mano_de_obra = Campos_Diligenciar["Campos_Mano_de_obra"]
-Campos_Servicio = Campos_Diligenciar["Campos_Servicio"]
-Campos_Asignacion = Campos_Diligenciar["Campos_Asignacion"]
-listado_flujo = Campos_Diligenciar["Flujo_OT"]
+    def flush(self):
+        self.original_stdout.flush()
+        self.archivo.flush()
 
-# Lectura de Excel
-name = 'Datos_entrada.xlsx'
-DF_OTs = pd.read_excel('Input\\' + name, sheet_name="OTs", dtype=str)
-DF_TAREAS = pd.read_excel('Input\\' + name, sheet_name="TAREAS", dtype=str)
-DF_MANO_DE_OBRA = pd.read_excel('Input\\' + name, sheet_name="MO", dtype=str)
-DF_MATERIALES = pd.read_excel('Input\\' + name, sheet_name="MATERIALES", dtype=str)
-DF_SERVICIOS = pd.read_excel('Input\\' + name, sheet_name="SERVICIOS", dtype=str)
+# Nombre del archivo donde se almacenarán los prints
+nombre_archivo = "Output/Report/Report_" + datetime.datetime.now().strftime('D%Y_%m_%d_H%H_%M_%S') + ".txt"
 
-# DataFrame de resultados
-df_registros = pd.DataFrame({'ID': [], 'OT': [], 'OT_PADRE': [], 'UBICACION': [], 'Registro': []})
+# Función para procesar una fila del Excel
+def procesar_fila(fila, Data_config, IDs, campos, DF_TAREAS, DF_MANO_DE_OBRA, DF_MATERIALES, DF_SERVICIOS):
+    thread_name = current_thread().name
+    try:
+        start_time = time()
+        print(f"[Hilo {thread_name}] Inicio procesamiento fila ID: {fila['ID']}")
 
-# Crear la cola de tareas
-task_queue = queue.Queue()
-for _, row in DF_OTs.iterrows():
-    if row['LABOR_BOT'] != 'NADA':
-        task_queue.put(row)
-        
+        # Crear instancia independiente de WebUploader_Class
+        web_uploader = WebUploader_Class(Data_config)
+        web_uploader.log_in(Data_config, IDs["Login"])
 
-# Función para procesar cada tarea
-def process_task():
-    global df_registros
-    
-    # Inicializar listas locales para consolidar logs y errores
-    thread_logs = []
-    thread_errors = []
+        # Crear instancias internas según los datos de la fila
+        DF_TAREAS_ACTUAL = DF_TAREAS.loc[DF_TAREAS['ID'] == fila['ID']].reset_index(drop=True)
+        DF_MANO_DE_OBRA_ACTUAL = DF_MANO_DE_OBRA.loc[DF_MANO_DE_OBRA['ID'] == fila['ID']].reset_index(drop=True)
+        DF_MATERIALES_ACTUAL = DF_MATERIALES.loc[DF_MATERIALES['ID'] == fila['ID']].reset_index(drop=True)
+        DF_SERVICIOS_ACTUAL = DF_SERVICIOS.loc[DF_SERVICIOS['ID'] == fila['ID']].reset_index(drop=True)
 
-    # Crear una instancia de WebUploader para este hilo
-    WebUploader = WebUploader_Class(Data_config)
+        # Crear instancia de Orden_Trabajo
+        OT_actual = Orden_Trabajo_Class(web_uploader, DF_TAREAS_ACTUAL, DF_MANO_DE_OBRA_ACTUAL, DF_MATERIALES_ACTUAL, DF_SERVICIOS_ACTUAL, fila)
 
-    # Iniciar sesión y navegar al menú OT
-    WebUploader.log_in(Data_config, IDs["Login"])
-    WebUploader.log_menu(IDs["Menus"]["Menu_OT"])
-    
-    while not task_queue.empty():
-        try:
-            task = task_queue.get_nowait()
-            time_start = time()
-            
-            try:
-                task_id = task["ID"]
-                pdb.set_trace()
+        # Ejecutar el proceso de la OT
+        web_uploader.Crear_OT(OT_actual, IDs, True)
+        OT_actual.Cambiar_ventana("Orden_trabajo", IDs)
 
-                # Filtrar dataframes relevantes
-                DF_TAREAS_ACTUAL = DF_TAREAS[DF_TAREAS['ID'] == task_id].reset_index(drop=True)
-                DF_MANO_DE_OBRA_ACTUAL = DF_MANO_DE_OBRA[DF_MANO_DE_OBRA['ID'] == task_id].reset_index(drop=True)
-                DF_MATERIALES_ACTUAL = DF_MATERIALES[DF_MATERIALES['ID'] == task_id].reset_index(drop=True)
-                DF_SERVICIOS_ACTUAL = DF_SERVICIOS[DF_SERVICIOS['ID'] == task_id].reset_index(drop=True)
+        # Diligenciar datos de la OT
+        if fila['LABOR_BOT'] == 'CREAR' or (fila['LABOR_BOT'] == 'MODIFICAR' and int(fila['LLENAR_OT']) == True):
+            OT_actual.Ingresar_Datos(campos["Campos_OT"], IDs["Orden_trabajo"], OT_actual, verbose=True)
+            OT_actual.guardarOT(IDs["Orden_trabajo"])
 
-                # Crear instancia de Orden_Trabajo_Class
-                OT_actual = Orden_Trabajo_Class(WebUploader, DF_TAREAS_ACTUAL, DF_MANO_DE_OBRA_ACTUAL, DF_MATERIALES_ACTUAL, DF_SERVICIOS_ACTUAL, task)
+        # Registrar éxito
+        registro = pd.DataFrame({
+            'ID': [fila['ID']],
+            'OT': [OT_actual.OT],
+            'Registro': ['Éxito']
+        })
 
-                # Crear y procesar OT
-                WebUploader.Crear_OT(OT_actual, IDs, True)
-                
-                # Consolidar logs de WebUploader
-                thread_logs.append(WebUploader.logs)
-                thread_errors.append(WebUploader.errors)
-                
-                OT_actual.Cambiar_ventana("Orden_trabajo", IDs)
+        web_uploader.cerrar_navegador()
 
-                # Procesar datos en pestaña "Orden_trabajo"
-                if task['LABOR_BOT'] in ['CREAR', 'MODIFICAR'] and int(task['LLENAR_OT']):
-                    OT_actual.Ingresar_Datos(campos_OT, IDs["Orden_trabajo"], OT_actual, verbose=True)
-                    OT_actual.guardarOT(IDs["Orden_trabajo"])
+        end_time = time()
+        print(f"[Hilo {thread_name}] Fin procesamiento fila ID: {fila['ID']} - Duración: {round(end_time - start_time, 2)} segundos")
 
-                # Procesar datos en pestaña "Planes"
-                if any([int(task[col]) for col in ['LLENAR_TAREA', 'LLENAR_SERVICIO', 'LLENAR_MO', 'LLENAR_MATERIAL']]):
-                    OT_actual.Cambiar_ventana("Planes", IDs)
+        return registro
 
-                    # Procesar tareas
-                    if int(task['LLENAR_TAREA']):
-                        OT_actual.Eliminar_Filas("tareas", IDs["Planes"], task['LABOR_BOT'])
-                        for row_tarea, _ in DF_TAREAS_ACTUAL.iterrows():
-                            OT_actual.Fila_Nueva(IDs["Planes"]["tareas"])
-                            OT_actual.Ingresar_Datos(Campos_Tarea, IDs["Planes"]["tareas"], OT_actual, OT_actual.Listado_Tareas[row_tarea], verbose=True)
-                        OT_actual.guardarOT(IDs["Orden_trabajo"])
+    except Exception as e:
+        web_uploader.cerrar_navegador()
+        print(f"[Hilo {thread_name}] Error en procesamiento fila ID: {fila['ID']} - {str(e)}")
 
-                    # Procesar mano de obra
-                    if int(task['LLENAR_MO']):
-                        OT_actual.Cambiar_ventana("mano_de_obra", IDs["Planes"])
-                        OT_actual.Eliminar_Filas("mano_de_obra", IDs["Planes"], task['LABOR_BOT'])
-                        for row_mano_de_obra, _ in DF_MANO_DE_OBRA_ACTUAL.iterrows():
-                            OT_actual.Fila_Nueva(IDs["Planes"]["mano_de_obra"])
-                            OT_actual.Ingresar_Datos(Campos_Mano_de_obra, IDs["Planes"]["mano_de_obra"], OT_actual, OT_actual.Listado_Mano_de_obra[row_mano_de_obra], verbose=True)
-                        OT_actual.guardarOT(IDs["Orden_trabajo"])
+        registro_error = pd.DataFrame({
+            'ID': [fila['ID']],
+            'OT': [fila.get('OT', 'N/A')],
+            'Registro': [str(e)]
+        })
+        return registro_error
 
-                    # Procesar servicios
-                    if int(task['LLENAR_SERVICIO']):
-                        OT_actual.Cambiar_ventana("servicios", IDs["Planes"])
-                        OT_actual.Eliminar_Filas("servicios", IDs["Planes"], task['LABOR_BOT'])
-                        for row_servicio, _ in DF_SERVICIOS_ACTUAL.iterrows():
-                            OT_actual.Fila_Nueva(IDs["Planes"]["servicios"])
-                            OT_actual.Ingresar_Datos(Campos_Servicio, IDs["Planes"]["servicios"], OT_actual, OT_actual.Listado_Servicios[row_servicio], verbose=True)
-                        OT_actual.guardarOT(IDs["Orden_trabajo"])
-                        
-                    # Procesar asignaciones
-                    if int(task['LLENAR_MO']):
-                        OT_actual.Cambiar_ventana("Asignaciones", IDs)
-                        OT_actual.Eliminar_Filas("asignaciones", IDs["Asignaciones"], task['LABOR_BOT'])
-                        for row_mano_de_obra, Datos_Asignaciones  in DF_MANO_DE_OBRA_ACTUAL.iterrows():
-                            if not pd.isnull(Datos_Asignaciones["MANO_OBRA"]):
-                                OT_actual.Fila_Nueva(IDs["Asignaciones"]["asignaciones"])
-                                OT_actual.Ingresar_Datos(Campos_Asignacion, IDs["Asignaciones"]["asignaciones"], OT_actual, OT_actual.Listado_Asignaciones[row_mano_de_obra], verbose=True)
-                        OT_actual.guardarOT(IDs["Orden_trabajo"])
+# Abre el archivo en modo de anexado ('a')
+with open(nombre_archivo, 'a') as archivo:
+    stdout_original = sys.stdout
+    dual_writer = DualWriter(stdout_original, archivo)
+    sys.stdout = dual_writer
 
-                # Procesar flujo de la OT
-                OT_actual.Cambiar_ventana("Orden_trabajo", IDs)
-                OT_actual.Flujo_OT(IDs, task["ESTADO_DESEADO"], listado_flujo[task["ESTADO_DESEADO"]])
+    try:
+        # Cargar configuraciones y datos
+        with open("Input/User_Config.json", encoding='utf-8') as file:
+            Data_config = json.load(file)
 
-                # Registro de resultado
-                registro = pd.DataFrame({'ID': [task_id], 'OT': [OT_actual.OT], 'OT_PADRE': [OT_actual.OT_PADRE],
-                                         'UBICACION': [task['TRAMO/TRANSFORMADOR']], 'Registro': [OT_actual.ESTADO]})
+        with open("Input/ID_Config.json", encoding='utf-8') as file:
+            IDs = json.load(file)
 
-                # Consolidar logs de OT_actual nuevamente
-                thread_logs.append(OT_actual.logs)
-                thread_errors.append(OT_actual.ERROR_OT)
-                thread_logs.append(f"Tiempo ejecución OT {task_id}: {round(time() - time_start, 1)} segundos.")
-                
-                # Al final, imprimir el log acumulado de manera controlada
-                with lock:
-                    print("==== LOGS ====")
-                    print("\n".join(thread_logs))
-                    print("==== ERRORES ====")
-                    print("\n".join(thread_errors))
-        
-                with lock:
-                    df_registros = pd.concat([df_registros, registro], ignore_index=True)
-                
+        with open("Input/Campos_Diligenciar.json", encoding='utf-8') as file:
+            Campos_Diligenciar = json.load(file)
 
-            except Exception as e:
-                # Manejar excepciones específicas y registrar el error
-                error_registro = pd.DataFrame({'ID': [task["ID"]], 'OT': ["ERROR"], 'OT_PADRE': ["ERROR"],
-                                               'UBICACION': [task['TRAMO/TRANSFORMADOR']], 'Registro': thread_errors})
+        campos = Campos_Diligenciar
 
-                with lock:
-                    df_registros = pd.concat([df_registros, error_registro], ignore_index=True)
-                WebUploader.cerrar_navegador()
-                
-                # Consolidar logs de OT_actual nuevamente
-                thread_logs.append(OT_actual.logs)
-                thread_errors.append(OT_actual.ERROR_OT)
-                thread_logs.append(f"Tiempo ejecución OT {task_id}: {round(time() - time_start, 1)} segundos.")
-                
-                # Al final, imprimir el log acumulado de manera controlada
-                with lock:
-                    print("==== LOGS ====")
-                    print("\n".join(thread_logs))
-                    print("==== ERRORES ====")
-                    print("\n".join(thread_errors))
-                
-                WebUploader = WebUploader_Class(Data_config)
-                WebUploader.log_in(Data_config, IDs["Login"])
-                WebUploader.log_menu(IDs["Menus"]["Menu_OT"])
-                        
-        except queue.Empty:
-            break
-    
-  
-# Iniciar multithreading con ThreadPoolExecutor
-num_threads = 2  # Ajustar según los recursos disponibles
-with ThreadPoolExecutor(max_workers=num_threads) as executor:
-    for _ in range(num_threads):
-        executor.submit(process_task)
+        # Cargar datos del Excel
+        DF_OTs = pd.read_excel('Input/Datos_entrada.xlsx', sheet_name="OTs", dtype=str)
+        DF_TAREAS = pd.read_excel('Input/Datos_entrada.xlsx', sheet_name="TAREAS", dtype=str)
+        DF_MANO_DE_OBRA = pd.read_excel('Input/Datos_entrada.xlsx', sheet_name="MO", dtype=str)
+        DF_MATERIALES = pd.read_excel('Input/Datos_entrada.xlsx', sheet_name="MATERIALES", dtype=str)
+        DF_SERVICIOS = pd.read_excel('Input/Datos_entrada.xlsx', sheet_name="SERVICIOS", dtype=str)
 
-# Guardar resultados finales
-output_file = "Output/Debug/Debug_" + datetime.datetime.now().strftime('D%Y_%m_%d_H%H_%M_%S') + ".xlsx"
-df_registros.to_excel(output_file, index=False)
+        # Procesar en paralelo con un límite de 3 procesos
+        resultados = []
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            future_to_id = {
+                executor.submit(procesar_fila, fila, Data_config, IDs, campos, DF_TAREAS, DF_MANO_DE_OBRA, DF_MATERIALES, DF_SERVICIOS): fila['ID']
+                for fila in DF_OTs.to_dict('records')
+            }
 
-# Calcular tiempo total del programa
-end_program_time = time()
-print(f"Tiempo total del programa: {round(end_program_time - start_program_time, 1)} segundos")
+            for future in as_completed(future_to_id):
+                fila_id = future_to_id[future]
+                try:
+                    result = future.result()
+                    resultados.append(result)
+                except Exception as exc:
+                    print(f"[Main] Error en hilo para fila ID {fila_id}: {exc}")
+
+        # Combinar resultados
+        registros_finales = pd.concat(resultados, ignore_index=True)
+
+        # Guardar resultados
+        name_output = "Output/Debug/Debug_" + datetime.datetime.now().strftime('D%Y_%m_%d_H%H_%M_%S') + ".xlsx"
+        registros_finales.to_excel(name_output, index=False)
+
+        time_program["end_program"] = time()
+        print("--------------------------------------------------------")
+        print("Tiempo ejecución total: ", round(time_program["end_program"] - time_program["start_program"], 1))
+
+    finally:
+        sys.stdout = stdout_original
