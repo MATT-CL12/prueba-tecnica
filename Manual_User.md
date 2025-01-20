@@ -109,12 +109,14 @@ Si desea procesar nuevos datos:
       |   |-- Campos_Diligenciar
       |   |-- User_Config.json
       |   |-- ID_Config.json
-      |   |-- Datos_L33_forestal.xlsx
       |   |-- Datos_entrada.xlsx
-      |   |-- Recurrentes/
-      |       |--Datos_guaduales_urbanos.xlsx
+      |
+      |-- Output
+      |   |-- Debug
+      |   |-- Report
       |
       |-- WebUploader_Class.py
       |-- Main.py
+      |-- requirements.txt
    ```
 
