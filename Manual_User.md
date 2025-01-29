@@ -4,7 +4,7 @@
 Este sistema permite automatizar el ingreso de datos en una plataforma web a partir de un archivo Excel. El código está diseñado para procesar la información contenida en un archivo de entrada, estructurado con varias hojas que representan diferentes categorías de datos (como OTs, Tareas, Materiales, etc.). Este manual describe cómo preparar los datos y ejecutar el sistema correctamente.
 
 ---
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/1.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/1.png)
 
 
 Para iniciar debemos instalar el programa llamado ANACONDA NAVIGATOR, 
@@ -13,14 +13,14 @@ Tecnico para la instalación.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/2.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/2.png)
 
 Luego ser instalado el programa debemos ingresar al apartado Environments y 
 luego create.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/3.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/3.png)
 
 En el Name debemos colocar el nombre Maximo para fácil ubicación, luego 
 asegurarse de marcar la casilla de python y por último asegurarse de escoger 
@@ -32,7 +32,7 @@ instalando en la parte inferior derecha de pa pantalla de ANACONDA.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/4.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/4.png)
 
 Luego de terminar la instalación de python debemos volver al home eh instalar 
 el programa spyder, este se instalará adecuadamente solo con darle clic en 
@@ -41,7 +41,7 @@ install. cuando este esté instalado le damos a launch para iniciarlo.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/5.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/5.png)
 
 Una vez iniciado el spyder debemos seleccionar el botón de archivos, luego el 
 de abrir, luego buscaremos el archivo donde tenemos el bot guardado.
@@ -49,14 +49,14 @@ de abrir, luego buscaremos el archivo donde tenemos el bot guardado.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/6.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/6.png)
 
 Una vez hallamos encontrado el archivo del bot seleccionaremos el documento 
 llamado Main_Cargar_Servicios.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/7.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/7.png)
 
 Luego de seleccionar el main debemos ir al aparatado de la derecha y 
 seleccionar archivos, este nos desplegará todos los documentos que tenemos 
@@ -79,7 +79,7 @@ botón sin hacer nada más le dirá la función de tal botón)
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/8.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/8.png)
 
 Luego debemos ingresar al apartado Herramientas y luego el de preferencias. 
 tal y como se muestra en la imagen.
@@ -87,7 +87,7 @@ tal y como se muestra en la imagen.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/9.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/9.png)
 
 En este apartado debemos de prestar mucha atención y si es necesario 
 realizarlo varias veces para asegurarse de que los cambios se implementen 
@@ -101,7 +101,7 @@ seleccionado sea máximo si no el bot no funcionara.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/10.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/10.png)
 
 En el siguiente paso debemos de ingresar a la terminal esta se encuentra en la 
 parte inferior derecha, verificar que en los botones de abajo este seleccionado 
@@ -116,7 +116,7 @@ un poco.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/11.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/11.png)
 
 Verificar que el archivo que almacena los datos este en la carpeta input y con 
 el nombre como aparece en la foto Datos_entrada
@@ -124,7 +124,7 @@ el nombre como aparece en la foto Datos_entrada
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/12.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/12.png)
 
 Dentro del excel podemos encontrar una tabla donde demos diligenciar los 
 datos para las OT, se puede llenar todos los datos que dese en vertical. tener 
@@ -140,7 +140,7 @@ acción. estas casillas se deben llenar según no requerido.
 
 ---
 
-![Captura de pantalla](https://github.com/Zarcasmo/Web_Scraping_MX/raw/Develop_2/img/13.png)
+![Captura de pantalla](https://github.com/MATT-CL12/prueba-tecnica/raw/main/img/13.png)
 
 Por último cada que dese activar el bot luego de digitar y guardar los datos en 
 el excel. se debe abrir el spyder fijarse que ya este seleccionado el archivo 
