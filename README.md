@@ -1,111 +1,172 @@
-# Proyecto: Automatización de Carga Masiva de Órdenes de Trabajo
+# Sistema de Carga Masiva de Datos en Órdenes de Trabajo (OTs)
 
-## Descripción General
-Este proyecto está diseñado para automatizar la carga masiva de órdenes de trabajo (OT) en un sistema de gestión empresarial utilizando Python y Selenium. El programa permite la configuración, validación y manipulación de datos provenientes de archivos Excel y JSON para ser procesados en IBM Maximo u otros sistemas similares.
+## Descripción
 
-## Características Principales
-- **Carga Masiva**: Procesamiento de múltiples OT con detalles específicos como tareas, mano de obra, materiales, servicios y asignaciones.
-- **Automatización Web**: Uso de Selenium para interactuar con el sistema de gestión empresarial mediante un navegador automatizado.
-- **Registro de Errores**: Manejo de excepciones y registro detallado en archivos de depuración.
-- **Configurabilidad**: Personalización de los parámetros de entrada mediante archivos JSON y Excel.
+Este sistema automatiza la carga masiva de Órdenes de Trabajo (OTs) en una plataforma web. Utiliza Selenium para interactuar con la interfaz, procesamiento multi-hilo para mejorar la eficiencia y manipula archivos Excel como fuente de datos. Se compone de tres módulos principales:
 
-## Requisitos del Sistema
-- **Lenguaje**: Python 3.13.1 (o superior).
-- **Bibliotecas**:
-  - pandas
-  - selenium
-- **WebDriver**: Microsoft Edge o compatible, con el driver correspondiente instalado.
-- **Archivos de Entrada**:
-  - `User_Config.json`: Configuración del usuario (credenciales y URL del sistema).
-  - `ID_Config.json`: Identificadores de elementos HTML necesarios para la automatización.
-  - `Campos_Diligenciar.json`: Especificación de campos que se deben llenar en cada OT.
-  - Archivo Excel con datos de entrada: `Datos_entrada.xlsx`.
+1. **`Main_Cargar_Servicios.py`**: Controla la ejecución del proceso de carga de OTs.
+2. **`multi_thread_runner.py`**: Divide la carga de trabajo en varios hilos para optimizar el rendimiento.
+3. **`WebUploader_Class.py`**: Implementa la automatización con Selenium para interactuar con la web.
+
+---
+
+## Características
+
+- **Carga masiva automatizada** de OTs en una plataforma web.
+- **Manejo de archivos Excel** para estructurar y procesar los datos.
+- **Automatización con Selenium**, interactuando con formularios web.
+- **Paralelización** del proceso para mejorar la eficiencia.
+- **Generación de logs y reportes** para depuración y seguimiento.
+
+---
 
 ## Estructura del Proyecto
-```plaintext
-Proyecto/
-|-- Input/
-|   |-- Campos_Diligenciar
-|   |-- User_Config.json
-|   |-- ID_Config.json
-|   |-- Datos_L33_forestal.xlsx
-|   |-- Datos_entrada.xlsx
-|   |-- Recurrentes/
-|       |--Datos_guaduales_urbanos.xlsx
-|
-|-- WebUploader_Class.py
-|-- Main.py
+
+```
+.
+├── Input/                  # Archivos de entrada (configuración, datos Excel)
+│   ├── User_Config.json    # Configuración del usuario y credenciales
+│   ├── ID_Config.json      # IDs de los elementos en la página web
+│   ├── Datos_entrada.xlsx  # Archivo con datos de las OTs
+│   ├── Campos_Diligenciar.json
+│
+├── Output/                 # Directorio de salida con reportes y logs
+│   ├── Report/             # Registros de ejecución
+│   ├── Debug/              # Registros de errores
+│
+├── Main_Cargar_Servicios.py   # Script principal que coordina el proceso
+├── multi_thread_runner.py     # Controla la ejecución multi-hilo
+├── WebUploader_Class.py       # Automatiza la interacción con la web
+├── README.md                  # Documentación del proyecto
 ```
 
-### Archivos Principales
-- **`Main.py`**: Archivo principal que coordina la ejecución del programa.
-- **`WebUploader_Class.py`**: Clase principal que encapsula la lógica de interacción con el navegador.
+---
 
-## Uso del Proyecto
+## Instalación
 
-### 1. Configuración Inicial
-1. Asegúrte de instalar las dependencias con el siguiente comando:
-   ```bash
-   pip install selenium
-   pip install pandas
-   ```
-2. Coloca los archivos de configuración JSON y el archivo Excel en la carpeta `Input/`.
-
-### 2. Ejecución
-Para ejecutar el programa, utiliza el siguiente comando:
+### 1. Clonar el repositorio
 ```bash
-python Main.py
+git clone https://github.com/Zarcasmo/Web_Scraping_MX
+cd main
 ```
 
-### 3. Salida
-- Los resultados se guardan en:
-  - **`Output/Report/`**: Reportes detallados de la ejecución.
-  - **`Output/Debug/`**: Archivos de depuración.
+### 2. Crear y activar un entorno virtual
+```bash
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+```
 
-## Documentación de Clases y Métodos
-### Clase: `WebUploader_Class`
-Esta clase representa el driver usado por Selenium para automatizar la interacción con el navegador.
+### 3. Instalar dependencias
+```bash
+pip install -r requirements.txt
+```
 
-#### Métodos Principales
-- **`log_in(Data_config, IDs, verbose=True)`**:
-  Inicia sesión en el sistema.
-  - **Parámetros**:
-    - `Data_config`: Configuración del usuario.
-    - `IDs`: Identificadores HTML.
-  - **Salida**: Booleano que indica el éxito.
+---
 
-- **`log_menu(menu, verbose=False)`**:
-  Navega al menú deseado dentro del sistema.
+## Uso
 
-- **`Crear_OT(OT_actual, IDs, verbose_crearOT=False)`**:
-  Crea una nueva orden de trabajo o modifica una existente.
+### Ejecución con un solo hilo
+```bash
+python Main_Cargar_Servicios.py
+```
 
-- **`Ingresar_Datos(columnas, IDs, Object_OT, instancia_interna=None, verbose=False)`**:
-  Ingresa datos en los campos especificados de la interfaz.
+Este comando:
+1. Carga los datos desde `Datos_entrada.xlsx`.
+2. Inicia sesión en la plataforma web usando `WebUploader_Class.py`.
+3. Itera sobre cada fila del archivo y automatiza la carga en la web.
+4. Genera reportes y logs en `Output/`.
 
-### Clase: `Orden_Trabajo_Class`
-Gestiona la creación y manipulación de órdenes de trabajo.
+### Ejecución con procesamiento multi-hilo
+```bash
+python multi_thread_runner.py
+```
 
-#### Atributos Principales
-- `ID`: Identificador de la OT.
-- `OT`: Número de la OT.
-- `Listado_Tareas`: Lista de tareas asociadas.
+Este script:
+1. Divide el archivo `Datos_entrada.xlsx` en fragmentos.
+2. Crea hilos para procesar cada fragmento en paralelo.
+3. Ejecuta `Main_Cargar_Servicios.py` en cada hilo con datos separados.
+4. Borra los archivos temporales y genera logs de ejecución.
 
-#### Métodos Principales
-- **`guardarOT(IDs, verbose=False)`**: Guarda los cambios realizados en la OT.
-- **`Eliminar_Filas(tipo, IDs, labor_bot="MODIFICAR")`**: Elimina filas específicas de la OT.
+---
 
-## Manejo de Errores
-El sistema implementa excepciones detalladas para los errores encontrados durante la ejecución, como:
-- Elementos no encontrados en la página web.
-- Datos inválidos en los archivos de entrada.
+## Explicación de los Códigos
+
+### `Main_Cargar_Servicios.py` (Script Principal)
+
+```python
+with open("Input/User_Config.json", encoding='utf-8') as file:
+    Data_config = json.load(file)
+```
+Carga las configuraciones del usuario, incluyendo credenciales y configuraciones de la plataforma.
+
+```python
+WebUploader = WebUploader_Class(Data_config)
+WebUploader.log_in(Data_config, IDs["Login"])
+```
+Inicia sesión en la plataforma web usando Selenium.
+
+```python
+for row, Datos in DF_OTs.iterrows():
+    if Datos['LABOR_BOT']!='NADA':
+        OT_actual = Orden_Trabajo_Class(WebUploader, DF_TAREAS_ACTUAL, DF_MANO_DE_OBRA_ACTUAL, DF_MATERIALES_ACTUAL, DF_SERVICIOS_ACTUAL, Datos)
+        WebUploader.Crear_OT(OT_actual, IDs, True)
+```
+Recorre el archivo Excel, filtra las filas según `LABOR_BOT` y automatiza la carga de datos.
+
+### `multi_thread_runner.py` (Procesamiento Multi-Hilo)
+
+```python
+with concurrent.futures.ThreadPoolExecutor(max_workers=n_threads) as executor:
+    futures = []
+    for thread_id, df_chunk in enumerate(chunks, start=1):
+        future = executor.submit(worker, thread_id, df_chunk, full_excel)
+        futures.append(future)
+```
+Divide la carga en varios hilos y ejecuta `Main_Cargar_Servicios.py` en paralelo.
+
+### `WebUploader_Class.py` (Automatización con Selenium)
+
+```python
+class WebUploader_Class:
+    def __init__(self, Data_config, verbose=True):
+        self.driver = webdriver.Edge(Options())
+        self.driver.get(Data_config["url_path"])
+```
+Inicia el navegador Edge con Selenium y accede a la URL configurada.
+
+```python
+def log_in(self, Data_config, IDs, verbose=True):
+    username_field = self.click_until_interactable(By.ID, IDs["username"])
+    username_field.send_keys(self.username)
+    password_field = self.click_until_interactable(By.ID, IDs["password"])
+    password_field.send_keys(self.password)
+```
+Automatiza el inicio de sesión en la plataforma.
+
+```python
+def Crear_OT(self, OT_actual, IDs, verbose_crearOT = False):
+    if OT_actual.OT_existente == False:
+        elemento_crearOT = self.click_until_interactable(By.ID, IDs["Buscadores"]["OTs"]["Crear_OT"])
+```
+Si la OT no existe, la crea en la plataforma web.
+
+---
+
+## Registro y Depuración
+Los logs y resultados se almacenan en la carpeta `Output/`. En caso de errores, se generan registros detallados en `Output/Debug/Debug.xlsx`.
+
+---
+
+## Contribuciones
+
+1. Realiza un fork del proyecto.
+2. Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
+3. Realiza tus cambios y haz commit (`git commit -m 'Añadir nueva funcionalidad'`).
+4. Haz push a la rama (`git push origin feature/nueva-funcionalidad`).
+5. Abre un Pull Request.
+
+---
 
 ## Licencia
-Este proyecto está bajo Licencia de software libre.
 
-## Contacto
-Para preguntas o sugerencias, puedes contactar a:
-- **Autor**: Alejandro López
-
-
-
+Este proyecto está bajo la Licencia Software libre.

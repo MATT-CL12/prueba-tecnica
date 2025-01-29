@@ -15,7 +15,7 @@ from selenium.common.exceptions import TimeoutException, ElementNotInteractableE
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-
+    
 tiempo_wait_driver = 30
 
 class WebUploader_Class:
@@ -763,8 +763,7 @@ class Orden_Trabajo_Class():
                             for id_i in IDs["flujo_OT"][Estado_deseado][estado]:
                                 conta2 = conta2 + 1
                                 elemento = self.WebUploader.click_until_interactable(By.ID, id_i, tiempo_wait=90) 
-                                sleep(2)
-                                
+                            
                             #Evaluar el estado de la OT
                             self.Evaluar_Estado_OT(IDs)
                             if self.ESTADO == Estado_deseado:

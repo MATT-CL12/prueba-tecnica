@@ -21,7 +21,7 @@ from time import time
 import datetime
 import json
 import sys
-
+import os
 #Funcion para determinar el tiempo de ejcución
 time_program = {"start_program": time(),"end_program":0,
                 "start_OT":0, "end_OT":0, "list_time_OT":[]}  
@@ -82,12 +82,23 @@ with open(nombre_archivo, 'a') as archivo:
         listado_flujo = Campos_Diligenciar["Flujo_OT"]
         
         #%% Lectura de Excel
-        name = 'Datos_entrada.xlsx'
-        DF_OTs = pd.read_excel('Input\\' + name, sheet_name="OTs",dtype=str)
-        DF_TAREAS = pd.read_excel('Input\\' + name, sheet_name="TAREAS",dtype=str)
-        DF_MANO_DE_OBRA = pd.read_excel('Input\\' + name, sheet_name="MO",dtype=str)
-        DF_MATERIALES = pd.read_excel('Input\\' + name, sheet_name="MATERIALES",dtype=str)
-        DF_SERVICIOS = pd.read_excel('Input\\' + name, sheet_name="SERVICIOS",dtype=str)
+       
+        if len(sys.argv) > 1:
+            excel_name = sys.argv[1]  # Nombre del Excel que viene por argumento
+        else:
+            excel_name = "Datos_entrada.xlsx"  # Valor por defecto si no pasas nada
+
+        # IMPORTANTE: Aquí ajustas la ruta según como le pases el arg:
+        # Si le pasas solo el nombre (ej. "Datos_entrada_chunk_1.xlsx"),
+        # lo concatenas con la carpeta Input\
+        excel_path = os.path.join("Input", excel_name)
+
+        # Luego lees:
+        DF_OTs = pd.read_excel(excel_path, sheet_name="OTs", dtype=str)
+        DF_TAREAS = pd.read_excel(excel_path, sheet_name="TAREAS", dtype=str)
+        DF_MANO_DE_OBRA = pd.read_excel(excel_path, sheet_name="MO", dtype=str)
+        DF_MATERIALES = pd.read_excel(excel_path, sheet_name="MATERIALES", dtype=str)
+        DF_SERVICIOS = pd.read_excel(excel_path, sheet_name="SERVICIOS", dtype=str)
         
         #%% Creación de WebUploader
         WebUploader = WebUploader_Class(Data_config)
